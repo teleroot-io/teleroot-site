@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archer Bio Page</title>
+    <style>
+        @font-face {
+            font-family: 'SAOWelcomeTT';
+            src: url('SAOWelcomeTT-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            position: relative;
+            background-color: #000;
+        }
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+        .container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Added negative margin to move content up */
+            margin-top: -50px; /* Adjust the value as needed */
+        }
+        .avatar-container {
+            height: 140px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid #8a2be2;
+            box-shadow: 0 0 15px #8a2be2;
+            background: url('avatar.png') no-repeat center center;
+            background-size: cover;
+            margin-top: -10px;
+        }
+        .bio-text {
+            font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
+            font-size: 18px;
+            margin-bottom: 15px;
+            max-width: 600px;
+            text-shadow: 0 0 5px #8a2be2;
+        }
+        .button {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            width: 200px;
+            background: transparent;
+            border: 2px solid #8a2be2;
+            color: #8a2be2;
+            font-size: 18px;
+            font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-shadow: 0 0 5px #8a2be2;
+        }
+        .button:hover {
+            background: #8a2be2;
+            color: #000;
+            box-shadow: 0 0 15px #8a2be2;
+        }
+        /* SAO Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 3;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        /* Style for ALL Modal Content */
+        .modal .modal-content {
+            background: rgba(0, 10, 20, 0.95);
+            border: 2px solid #8a2be2;
+            box-shadow: 0 0 30px #8a2be2, inset 0 0 15px #8a2be2;
+            border-radius: 10px;
+            padding: 20px;
+            width: 80%;
+            max-width: 500px;
+            color: #fff;
+            text-align: center;
+            animation: saoFadeIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .modal .modal-content::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(
+                    to right,
+                    rgba(138, 43, 226, 0.05) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    to bottom,
+                    rgba(138, 43, 226, 0.05) 1px,
+                    transparent 1px
+                );
+            background-size: 4px 4px;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .modal .modal-content::after {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg,
+                rgba(138, 43, 226, 0.1) 0%,
+                rgba(138, 43, 226, 0) 20%,
+                rgba(138, 43, 226, 0.1) 40%,
+                rgba(138, 43, 226, 0) 60%,
+                rgba(138, 43, 226, 0.1) 80%,
+                rgba(138, 43, 226, 0) 100%);
+            background-size: 400% 400%;
+            animation: saoScan 6s linear infinite;
+            z-index: -1;
+            opacity: 0.5;
+        }
+        @keyframes saoFadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(20px);
+                filter: blur(5px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        /* Анимация схлопывания */
+        @keyframes collapse {
+            0% {
+                transform: scaleY(1);
+            }
+            90% {
+                transform: scaleY(0); /* Сжимаем высоту до нуля */
+            }
+            100% {
+                transform: scaleY(0);
+                opacity: 0; /* Делаем окно невидимым */
+            }
+        }
+
+        /* Анимация всплеска (простая вспышка) */
+        @keyframes burst {
+            0% {
+                opacity: 0.8;
+                background-color: #8a2be2; /* Стартовый цвет вспышки */
+            }
+            100% {
+                opacity: 0;
+                background-color: rgba(138, 43, 226, 0);  /* Прозрачный */
+            }
+        }
+
+        .modal .modal-content.collapsing {
+            animation: collapse 0.4s ease-in-out forwards;
+        }
+
+        .modal .modal-content.collapsing::after { /* Используем псевдоэлемент для всплеска */
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px; /* Чтобы всплеск соответствовал форме окна */
+            animation: burst 0.3s ease-out forwards;
+            z-index: 10; /* Чтобы всплеск был поверх контента */
+        }
+        /* Project Styles - From projects.html */
+        .project-text {
+            font-family: 'SAOWelcomeTT', 'Arial', sans-serif; /* Updated to SAO font */
+            font-size: 18px; /* Slightly increased size */
+            margin-bottom: 20px;
+            max-width: 600px;
+            text-shadow: 0 0 5px #8a2be2;
+        }
+        .project-content {
+            font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
+            font-size: 14px; /* Smaller text for content */
+            margin-bottom: 20px;
+            max-width: 600px;
+            text-align: left;
+             text-shadow: 0 0 5px #8a2be2;
+        }
+        /* Add left padding to the "headers" */
+        .project-content strong {
+            padding-left: 20px; /* Adjust as needed */
+            display: block;
+        }
+
+        .project-content a {
+            display: block;
+            margin: 10px auto; /* Same spacing as buttons */
+            padding: 8px 16px; /* Slightly smaller padding for links */
+            /* Reduced width of project buttons for better mobile display */
+            width: 250px; /* Adjust the value as needed */
+            background: transparent;
+            border: 2px solid #8a2be2;
+            color: #8a2be2;
+            font-size: 14px;
+            font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .project-content a:hover {
+            background: #8a2be2;
+            color: #000;
+            box-shadow: 0 0 10px #8a2be2;
+        }
+        
+        .donation-content {
+            font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
+            font-size: 14px; /* Smaller text for content */
+            margin-bottom: 20px;
+            max-width: 600px;
+            text-align: left;
+             text-shadow: 0 0 5px #8a2be2;
+        }
+        /* Add left padding to the "headers" */
+        .donation-content strong {
+            padding-left: 20px; /* Adjust as needed */
+            display: block;
+        }
+
+        .donation-content a {
+            display: block;
+            margin: 10px auto; /* Same spacing as buttons */
+            padding: 8px 16px; /* Slightly smaller padding for links */
+            /* Reduced width of project buttons for better mobile display */
+            width: 250px; /* Adjust the value as needed */
+            background: transparent;
+            border: 2px solid #8a2be2;
+            color: #8a2be2;
+            font-size: 14px;
+            font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .donation-content a:hover {
+            background: #8a2be2;
+            color: #000;
+            box-shadow: 0 0 10px #8a2be2;
+        }
+
+        /* Style to hide all .modal-content initially */
+        .modal .modal-content {
+            display: none;
+        }
+
+        /* Style to show modal content when modal has .show class */
+        .modal.show .modal-content {
+            display: block;
+        }
+
+        @keyframes saoScan {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+        .modal-text {
+            font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
+            font-size: 16px;
+            margin-bottom: 20px;
+            width: 100%;
+            text-shadow: 0 0 5px #8a2be2;
+        }
+        .close-button {
+            display: inline-block;
+            margin: 10px auto;
+            padding: 8px 16px;
+            width: 100px;
+            background: transparent;
+            border: 2px solid #8a2be2;
+            color: #8a2be2;
+            font-size: 14px;
+            font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-shadow: 0 0 5px #8a2be2;
+        }
+        .close-button:hover {
+            background: #8a2be2;
+            color: #000;
+            box-shadow: 0 0 15px #8a2be2;
+        }
+        /* Music Control Styles */
+        .music-control {
+            position: fixed;
+            bottom: -100px;
+            right: 20px;
+            z-index: 4;
+            display: flex;
+            align-items: center;
+            background: rgba(0, 10, 20, 0.9);
+            border: 2px solid #8a2be2;
+            box-shadow: 0 0 15px #8a2be2, inset 0 0 8px #8a2be2;
+            border-radius: 10px;
+            padding: 10px;
+            animation: slideIn 0.5s ease-out forwards;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(100px); }
+            to { transform: translateY(0); }
+        }
+        .disc {
+            width: 30px;
+            height: 30px;
+            background: url('disc.png') no-repeat center center;
+            background-size: cover;
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: spin 2s linear infinite, pulse 1s ease-in-out infinite;
+            animation-play-state: paused;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(138, 43, 226, 0.4); }
+            50% { box-shadow: 0 0 0 5px rgba(138, 43, 226, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(138, 43, 226, 0); }
+        }
+        .music-control.playing .disc {
+            animation-play-state: running;
+        }
+        .toggle-button {
+            font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
+            color: #8a2be2;
+            font-size: 12px;
+            margin-right: 10px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border: 1px solid #8a2be2;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px #8a2be2;
+        }
+        .toggle-button:hover {
+            background: #8a2be2;
+            color: #000;
+        }
+        .music-slider {
+            width: 100px;
+            accent-color: #8a2be2;
+            margin-right: 5px;
+        }
+        .music-label {
+            font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
+            color: #8a2be2;
+            font-size: 12px;
+            margin-right: 10px;
+            text-shadow: 0 0 5px #8a2be2;
+        }
+        /* Donat Elements*/
+        .donation-item {
+            display: flex;
+            align-items: center; /* Выравниваем по центру по вертикали */
+            margin: 10px 0; /* Уменьшаем отступы */
+            padding: 6px 12px; /* Уменьшаем внутренние отступы */
+            background: rgba(0, 10, 20, 0.7);
+            border-radius: 30px;
+            border: 1px solid #8a2be2;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+            transition: all 0.3s ease;
+            gap: 4px; /* Минимальное расстояние между иконкой и текстом */
+        }
+        .donation-icon {
+            width: 24px; /* Уменьшаем размер иконки */
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #8a2be2;
+            box-shadow: 0 0 5px #8a2be2;
+            object-fit: cover;
+            background: rgba(0, 0, 0, 0.5);
+            margin-right: 0; /* Убираем правый отступ */
+        }
+        .donation-item span {
+            color: #8a2be2;
+            font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
+            text-shadow: 0 0 3px #8a2be2;
+            font-size: 16px;
+            line-height: 1.2; /* Оптимальный межстрочный интервал */
+            padding-top: 2px; /* Микро-корректировка по вертикали */
+        }
+        @media (max-width: 600px) {
+           /* Mobile styles */
+            .project-content strong {
+                padding-left: 10px; /* Adjust padding for mobile */
+            }
+            .donation-content strong {
+                padding-left: 10px; /* Adjust padding for mobile */
+            }
+            .avatar-container {
+                height: 100px;
+            }
+            .avatar {
+                width: 80px;
+                height: 80px;
+                margin-top: -8px;
+            }
+            .bio-text {
+                font-size: 16px;
+            }
+            .button {
+                width: 150px;
+                font-size: 16px;
+            }
+            .modal-text {
+                font-size: 14px;
+            }
+            .close-button {
+                width: 80px;
+                font-size: 12px;
+            }
+           /* Adjust mobile styles to reduce width of project buttons */
+            .project-content a {
+                width: 200px; /* Adjust the width as necessary */
+                font-size: 12px; /* Reduce the font size a bit too */
+            }
+            .donation-content a {
+                width: 200px; /* Adjust the width as necessary */
+                font-size: 12px; /* Reduce the font size a bit too */
+            }
+            .music-control {
+                bottom: -80px;
+                right: 10px;
+                padding: 5px;
+            }
+            .disc {
+                width: 25px;
+                height: 25px;
+            }
+            .toggle-button {
+                font-size: 10px;
+                padding: 3px 8px;
+            }
+            .music-slider {
+                width: 80px;
+            }
+            /*.donation-item {
+                padding: 6px 12px;
+                margin: 10px 0;
+            }*/
+            .donation-icon {
+                margin-right: 2px;
+                width: 30px;
+                height: 30px;
+            }
+            .donation-item span {
+                font-size: 14px;
+            }
+    </style>
+</head>
+<body>
+    <video autoplay muted loop class="video-background">
+        <source src="background.mp4" type="video/mp4">
+    </video>
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="avatar-container">
+            <div class="avatar"></div>
+        </div>
+        <div class="bio-text">Arͥcʜͣeͫr</div>
+        <a href="#" class="button" onclick="openModal('projectsModal')">Проекты</a>
+        <a href="#" class="button" onclick="openModal('donatModal')">Донат</a>
+        <!--<a href="#" class="button" onclick="openModal('broModal')">Мои бро</a>-->
+        <a href="https://t.me/a_nvx" class="button">Связь со мной</a>
+    </div>
+
+    <!-- Bro Modal -->
+    <div class="modal" id="broModal">
+        <div class="modal-content">
+            <div class="modal-text">
+                My bro:<br>
+                <p>null</p>
+            </div>
+            <a href="#" class="close-button" onclick="closeModal('broModal')">Закрыть</a>
+        </div>
+    </div>
+
+    <!-- Donat Modal -->
+    <div class="modal" id="donatModal">
+        <div class="modal-content">
+            <div class="modal-text">Реквизиты:</div>
+            <div class="donation-content">
+                <p><strong>💰 Crypto:</strong></p>
+                <p><a href="https://app.tonkeeper.com/transfer/UQD-kzWDrVGX0QM8Itb_WF2FAvYjfDOKV6PqcQp3W0HdkC-T">Tonkepeer</a></p>
+            </div>
+            <!--<div class="donation-item" onclick="window.open('https://app.tonkeeper.com/transfer/UQD-kzWDrVGX0QM8Itb_WF2FAvYjfDOKV6PqcQp3W0HdkC-T', '_blank')">
+                <img src="https://tonkeeper.com/favicon.ico" class="donation-icon">
+                <span>Tonkepeer</span>
+            </div>
+                <!--<div class="donation-item">
+                    <img src="https://tonkeeper.com/favicon.ico" class="donation-icon">
+                    <a href="https://app.tonkeeper.com/transfer/UQD-kzWDrVGX0QM8Itb_WF2FAvYjfDOKV6PqcQp3W0HdkC-T">Tonkepeer</a>
+                </div>
+                <!--<p><a href="https://app.tonkeeper.com/transfer/UQD-kzWDrVGX0QM8Itb_WF2FAvYjfDOKV6PqcQp3W0HdkC-T" class="tonkepeer-link">Tonkepeer</a></p>
+            </div>-->
+            <a href="#" class="close-button" onclick="closeModal('donatModal')">Закрыть</a>
+        </div>
+    </div>
+
+    <!-- Projects Modal -->
+    <div class="modal" id="projectsModal">
+        <div class="modal-content">
+            <div class="project-text">My Projects</div>
+            <div class="project-content">
+                <p><strong>👥 Channels:</strong></p>
+                <p><a href="#">Мой канал</a></p>
+                <p><a href="#">Мой канал️</a></p>
+                <p><a href="#">Мой канал️</a></p>
+                <p><strong>💬 Chats:</strong></p>
+                <p><a href="#">Мой чат</a></p>
+                <p><a href="#">Мой чат</a></p>
+                <p><strong>🤖 Bots:</strong></p>
+                <p><a href="#">Мой бот</a></p>
+                <p><a href="#">Мой бот</a></p>
+            </div>
+            <a href="#" class="close-button" onclick="closeModal('projectsModal')">Назад</a>
+        </div>
+    </div>
+
+    <div class="music-control">
+        <div class="disc"></div>
+        <span class="toggle-button" id="playPause">Play</span>
+        <input type="range" min="0" max="1" step="0.1" value="0.3" class="music-slider">
+        <span class="music-label">Музыка</span>
+    </div>
+    <audio id="backgroundMusic" src="music.mp3" loop></audio>
+
+    <script>
+        // Ensure modal is hidden on page load
+        window.onload = function() {
+            document.getElementById('donatModal').style.display = 'none';
+            document.getElementById('broModal').style.display = 'none';
+            document.getElementById('projectsModal').style.display = 'none';
+
+            // Ensure music control slides in
+            const musicControl = document.querySelector('.music-control');
+            setTimeout(() => {
+                musicControl.style.bottom = '20px';
+            }, 100);
+            // Load music state
+            const savedState = JSON.parse(localStorage.getItem('musicState'));
+            if (savedState && savedState.isPlaying) {
+                backgroundMusic.play();
+                document.getElementById('playPause').textContent = 'Pause';
+                musicControl.classList.add('playing');
+                backgroundMusic.volume = savedState.volume;
+                musicSlider.value = savedState.volume;
+            } else {
+                backgroundMusic.volume = 0.3;
+                musicSlider.value = 0.3;
+            }
+        };
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const modalContent = modal.querySelector('.modal-content');
+
+             // Reset closing animation if it was active
+            modalContent.classList.remove('collapsing');
+
+            modal.style.display = 'flex';
+            modal.classList.add('show'); // Add the show class to display the modal
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const modalContent = modal.querySelector('.modal-content');
+
+            modalContent.classList.add('collapsing'); // Add the collapsing class for animation
+
+            setTimeout(() => {
+                modal.classList.remove('show'); // Remove the show class to hide the modal
+                modal.style.display = 'none';
+                modalContent.classList.remove('collapsing');
+
+            }, 400); // Match the duration of the collapse animation
+        }
+
+
+        // Close modal when clicking outside
+        document.getElementById('broModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeModal('broModal');
+            }
+        });
+        document.getElementById('projectsModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeModal('projectsModal');
+            }
+        });
+
+        // Music control
+        const musicControl = document.querySelector('.music-control');
+        const playPauseButton = document.getElementById('playPause');
+        const musicSlider = document.querySelector('.music-slider');
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        const disc = document.querySelector('.disc');
+
+        playPauseButton.addEventListener('click', function() {
+            if (backgroundMusic.paused) {
+                backgroundMusic.play();
+                playPauseButton.textContent = 'Pause';
+                musicControl.classList.add('playing');
+            } else {
+                backgroundMusic.pause();
+                playPauseButton.textContent = 'Play';
+                musicControl.classList.remove('playing');
+            }
+        });
+
+        musicSlider.addEventListener('input', function() {
+            backgroundMusic.volume = this.value;
+        });
+
+        function saveMusicState() {
+            const musicState = {
+                isPlaying: !backgroundMusic.paused,
+                volume: backgroundMusic.volume
+            };
+            localStorage.setItem('musicState', JSON.stringify(musicState));
+        }
+
+        // Initial volume set
+        backgroundMusic.volume = 0.3;
+    </script>
+</body>
+</html>
