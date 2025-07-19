@@ -7,7 +7,7 @@
     <style>
         @font-face {
             font-family: 'SAOWelcomeTT';
-            src: url('SAOWelcomeTT-Regular.ttf') format('truetype');
+            src: url('fonts/SAOWelcomeTT-Regular.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
         }
@@ -50,8 +50,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* Added negative margin to move content up */
-            margin-top: -50px; /* Adjust the value as needed */
+            margin-top: -50px;
         }
         .avatar-container {
             height: 140px;
@@ -59,16 +58,28 @@
             justify-content: center;
             align-items: center;
             margin-bottom: 5px;
+            position: relative;
         }
-        .avatar {
+        .avatar-image, .avatar-video {
             width: 120px;
             height: 120px;
             border-radius: 50%;
             border: 3px solid #8a2be2;
             box-shadow: 0 0 15px #8a2be2;
-            background: url('avatar.png') no-repeat center center;
-            background-size: cover;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
             margin-top: -10px;
+        }
+        .avatar-image {
+            background: no-repeat center center;
+            background-size: cover;
+            display: none;
+        }
+        .avatar-video {
+            object-fit: cover;
+            display: none;
         }
         .bio-text {
             font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
@@ -98,7 +109,6 @@
             color: #000;
             box-shadow: 0 0 15px #8a2be2;
         }
-        /* SAO Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -112,7 +122,6 @@
             align-items: center;
             overflow: hidden;
         }
-        /* Style for ALL Modal Content */
         .modal .modal-content {
             background: rgba(0, 10, 20, 0.95);
             border: 2px solid #8a2be2;
@@ -128,7 +137,6 @@
             overflow: hidden;
             transform-style: preserve-3d;
         }
-
         .modal .modal-content::before {
             content: "";
             position: absolute;
@@ -182,76 +190,66 @@
                 filter: blur(0);
             }
         }
-
-        /* Анимация схлопывания */
         @keyframes collapse {
             0% {
                 transform: scaleY(1);
             }
             90% {
-                transform: scaleY(0); /* Сжимаем высоту до нуля */
+                transform: scaleY(0);
             }
             100% {
                 transform: scaleY(0);
-                opacity: 0; /* Делаем окно невидимым */
+                opacity: 0;
             }
         }
-
-        /* Анимация всплеска (простая вспышка) */
         @keyframes burst {
             0% {
                 opacity: 0.8;
-                background-color: #8a2be2; /* Стартовый цвет вспышки */
+                background-color: #8a2be2;
             }
             100% {
                 opacity: 0;
-                background-color: rgba(138, 43, 226, 0);  /* Прозрачный */
+                background-color: rgba(138, 43, 226, 0);
             }
         }
-
         .modal .modal-content.collapsing {
             animation: collapse 0.4s ease-in-out forwards;
         }
-
-        .modal .modal-content.collapsing::after { /* Используем псевдоэлемент для всплеска */
+        .modal .modal-content.collapsing::after {
             content: "";
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            border-radius: 10px; /* Чтобы всплеск соответствовал форме окна */
+            border-radius: 10px;
             animation: burst 0.3s ease-out forwards;
-            z-index: 10; /* Чтобы всплеск был поверх контента */
+            z-index: 10;
         }
-        /* Project Styles - From projects.html */
         .project-text {
-            font-family: 'SAOWelcomeTT', 'Arial', sans-serif; /* Updated to SAO font */
-            font-size: 18px; /* Slightly increased size */
+            font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
+            font-size: 18px;
             margin-bottom: 20px;
             max-width: 600px;
             text-shadow: 0 0 5px #8a2be2;
         }
         .project-content {
             font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
-            font-size: 14px; /* Smaller text for content */
+            font-size: 14px;
             margin-bottom: 20px;
             max-width: 600px;
             text-align: left;
-             text-shadow: 0 0 5px #8a2be2;
+            text-shadow: 0 0 5px #8a2be2;
         }
-        /* Add left padding to the "headers" */
         .project-content strong {
-            padding-left: 20px; /* Adjust as needed */
+            padding-left: 20px;
             display: block;
         }
-
         .project-content a {
             display: block;
-            margin: 10px auto; /* Same spacing as buttons */
-            padding: 8px 16px; /* Slightly smaller padding for links */
-            /* Reduced width of project buttons for better mobile display */
-            width: 250px; /* Adjust the value as needed */
+            margin: 10px auto;
+            padding: 8px 16px;
+            width: 250px;
             background: transparent;
             border: 2px solid #8a2be2;
             color: #8a2be2;
@@ -267,27 +265,23 @@
             color: #000;
             box-shadow: 0 0 10px #8a2be2;
         }
-        
         .donation-content {
             font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
-            font-size: 14px; /* Smaller text for content */
+            font-size: 14px;
             margin-bottom: 20px;
             max-width: 600px;
             text-align: left;
-             text-shadow: 0 0 5px #8a2be2;
+            text-shadow: 0 0 5px #8a2be2;
         }
-        /* Add left padding to the "headers" */
         .donation-content strong {
-            padding-left: 20px; /* Adjust as needed */
+            padding-left: 20px;
             display: block;
         }
-
         .donation-content a {
             display: block;
-            margin: 10px auto; /* Same spacing as buttons */
-            padding: 8px 16px; /* Slightly smaller padding for links */
-            /* Reduced width of project buttons for better mobile display */
-            width: 250px; /* Adjust the value as needed */
+            margin: 10px auto;
+            padding: 8px 16px;
+            width: 250px;
             background: transparent;
             border: 2px solid #8a2be2;
             color: #8a2be2;
@@ -303,17 +297,12 @@
             color: #000;
             box-shadow: 0 0 10px #8a2be2;
         }
-
-        /* Style to hide all .modal-content initially */
         .modal .modal-content {
             display: none;
         }
-
-        /* Style to show modal content when modal has .show class */
         .modal.show .modal-content {
             display: block;
         }
-
         @keyframes saoScan {
             0% { background-position: 0% 0%; }
             100% { background-position: 100% 100%; }
@@ -346,7 +335,6 @@
             color: #000;
             box-shadow: 0 0 15px #8a2be2;
         }
-        /* Music Control Styles */
         .music-control {
             position: fixed;
             bottom: -100px;
@@ -368,7 +356,7 @@
         .disc {
             width: 30px;
             height: 30px;
-            background: url('disc.png') no-repeat center center;
+            background: no-repeat center center;
             background-size: cover;
             border-radius: 50%;
             margin-right: 10px;
@@ -415,49 +403,47 @@
             margin-right: 10px;
             text-shadow: 0 0 5px #8a2be2;
         }
-        /* Donat Elements*/
         .donation-item {
             display: flex;
-            align-items: center; /* Выравниваем по центру по вертикали */
-            margin: 10px 0; /* Уменьшаем отступы */
-            padding: 6px 12px; /* Уменьшаем внутренние отступы */
+            align-items: center;
+            margin: 10px 0;
+            padding: 6px 12px;
             background: rgba(0, 10, 20, 0.7);
             border-radius: 30px;
             border: 1px solid #8a2be2;
             box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
             transition: all 0.3s ease;
-            gap: 4px; /* Минимальное расстояние между иконкой и текстом */
+            gap: 4px;
         }
         .donation-icon {
-            width: 24px; /* Уменьшаем размер иконки */
+            width: 24px;
             height: 24px;
             border-radius: 50%;
             border: 2px solid #8a2be2;
             box-shadow: 0 0 5px #8a2be2;
             object-fit: cover;
             background: rgba(0, 0, 0, 0.5);
-            margin-right: 0; /* Убираем правый отступ */
+            margin-right: 0;
         }
         .donation-item span {
             color: #8a2be2;
             font-family: 'SAOWelcomeTT', 'Arial', sans-serif;
             text-shadow: 0 0 3px #8a2be2;
             font-size: 16px;
-            line-height: 1.2; /* Оптимальный межстрочный интервал */
-            padding-top: 2px; /* Микро-корректировка по вертикали */
+            line-height: 1.2;
+            padding-top: 2px;
         }
         @media (max-width: 600px) {
-           /* Mobile styles */
             .project-content strong {
-                padding-left: 10px; /* Adjust padding for mobile */
+                padding-left: 10px;
             }
             .donation-content strong {
-                padding-left: 10px; /* Adjust padding for mobile */
+                padding-left: 10px;
             }
             .avatar-container {
                 height: 100px;
             }
-            .avatar {
+            .avatar-image, .avatar-video {
                 width: 80px;
                 height: 80px;
                 margin-top: -8px;
@@ -476,14 +462,13 @@
                 width: 80px;
                 font-size: 12px;
             }
-           /* Adjust mobile styles to reduce width of project buttons */
             .project-content a {
-                width: 200px; /* Adjust the width as necessary */
-                font-size: 12px; /* Reduce the font size a bit too */
+                width: 200px;
+                font-size: 12px;
             }
             .donation-content a {
-                width: 200px; /* Adjust the width as necessary */
-                font-size: 12px; /* Reduce the font size a bit too */
+                width: 200px;
+                font-size: 12px;
             }
             .music-control {
                 bottom: -80px;
@@ -501,45 +486,32 @@
             .music-slider {
                 width: 80px;
             }
-            /*.donation-item {
-                padding: 6px 12px;
-                margin: 10px 0;
-            }*/
             .donation-icon {
-                margin-right: 2px;
                 width: 30px;
                 height: 30px;
             }
             .donation-item span {
                 font-size: 14px;
             }
+        }
     </style>
 </head>
 <body>
-    <video autoplay muted loop class="video-background">
-        <source src="background.mp4" type="video/mp4">
+    <video autoplay muted loop class="video-background" id="backgroundVideo">
+        <source src="" type="video/mp4" id="videoSource">
     </video>
     <div class="overlay"></div>
     <div class="container">
         <div class="avatar-container">
-            <div class="avatar"></div>
+            <!-- Контейнер для изображения -->
+            <div class="avatar-image" id="avatarImage"></div>
+            <!-- Контейнер для видео -->
+            <video class="avatar-video" id="avatarVideo" autoplay loop muted playsinline></video>
         </div>
         <div class="bio-text">Arͥcʜͣeͫr</div>
         <a href="#" class="button" onclick="openModal('projectsModal')">Проекты</a>
         <a href="#" class="button" onclick="openModal('donatModal')">Донат</a>
-        <!--<a href="#" class="button" onclick="openModal('broModal')">Мои бро</a>-->
         <a href="https://t.me/a_nvx" class="button">Связь со мной</a>
-    </div>
-
-    <!-- Bro Modal -->
-    <div class="modal" id="broModal">
-        <div class="modal-content">
-            <div class="modal-text">
-                My bro:<br>
-                <p>null</p>
-            </div>
-            <a href="#" class="close-button" onclick="closeModal('broModal')">Закрыть</a>
-        </div>
     </div>
 
     <!-- Donat Modal -->
@@ -548,18 +520,8 @@
             <div class="modal-text">Реквизиты:</div>
             <div class="donation-content">
                 <p><strong>💰 Crypto:</strong></p>
-                <p><a href="https://app.tonkeeper.com/transfer/UQD-kzWDrVGX0QM8Itb_WF2FAvYjfDOKV6PqcQp3W0HdkC-T">Tonkepeer</a></p>
+                <p><a href="https://app.tonkeeper.com/transfer/UQD-kzWDrVGX0QM8Itb_WF2FAvYjfDOKV6PqcQp3W0HdkC-T">Tonkeeper</a></p>
             </div>
-            <!--<div class="donation-item" onclick="window.open('https://app.tonkeeper.com/transfer/UQD-kzWDrVGX0QM8Itb_WF2FAvYjfDOKV6PqcQp3W0HdkC-T', '_blank')">
-                <img src="https://tonkeeper.com/favicon.ico" class="donation-icon">
-                <span>Tonkepeer</span>
-            </div>
-                <!--<div class="donation-item">
-                    <img src="https://tonkeeper.com/favicon.ico" class="donation-icon">
-                    <a href="https://app.tonkeeper.com/transfer/UQD-kzWDrVGX0QM8Itb_WF2FAvYjfDOKV6PqcQp3W0HdkC-T">Tonkepeer</a>
-                </div>
-                <!--<p><a href="https://app.tonkeeper.com/transfer/UQD-kzWDrVGX0QM8Itb_WF2FAvYjfDOKV6PqcQp3W0HdkC-T" class="tonkepeer-link">Tonkepeer</a></p>
-            </div>-->
             <a href="#" class="close-button" onclick="closeModal('donatModal')">Закрыть</a>
         </div>
     </div>
@@ -585,110 +547,192 @@
     </div>
 
     <div class="music-control">
-        <div class="disc"></div>
+        <div class="disc" id="disc"></div>
         <span class="toggle-button" id="playPause">Play</span>
-        <input type="range" min="0" max="1" step="0.1" value="0.3" class="music-slider">
+        <input type="range" min="0" max="1" step="0.1" value="0.3" class="music-slider" id="musicSlider">
         <span class="music-label">Музыка</span>
     </div>
-    <audio id="backgroundMusic" src="music.mp3" loop></audio>
+    <audio id="backgroundMusic"></audio>
 
     <script>
-        // Ensure modal is hidden on page load
-        window.onload = function() {
+        // Список доступных тем
+        const themes = ['Tinasha', 'Kurumi Tokisaki', 'Mahiru Shiina', 'Miyako Shikimori', 'Alisa Mikhailovna Kujou', 'Tsukasa Yuzaki', 'Ai Hoshino', 'Ruby Hoshino', 'Akane Kurokawa', 'Aki Adagaki', 'Terakomari Gandesblood'];
+        
+        // Выбор случайной темы
+        function getRandomTheme() {
+            const randomIndex = Math.floor(Math.random() * themes.length);
+            return themes[randomIndex];
+        }
+        
+        // Проверка существования файла
+        async function checkFileExists(url) {
+            try {
+                const response = await fetch(url, { method: 'HEAD' });
+                return response.ok;
+            } catch (error) {
+                console.error('Error checking file:', url, error);
+                return false;
+            }
+        }
+        
+        // Установка ресурсов для выбранной темы
+        async function setThemeResources(theme) {
+            const basePath = `src/${theme}`;
+            
+            // Определение типа аватара
+            const avatarImage = document.getElementById('avatarImage');
+            const avatarVideo = document.getElementById('avatarVideo');
+            
+            // Проверяем существование видео-аватара
+            const videoExtensions = ['mp4', 'webm', 'mov'];
+            let avatarType = 'image';
+            
+            for (const ext of videoExtensions) {
+                const videoPath = `${basePath}/avatar.${ext}`;
+                if (await checkFileExists(videoPath)) {
+                    // Установка видео-аватара
+                    avatarVideo.src = videoPath;
+                    avatarVideo.style.display = 'block';
+                    avatarImage.style.display = 'none';
+                    avatarType = 'video';
+                    break;
+                }
+            }
+            
+            // Если видео не найдено, используем изображение
+            if (avatarType === 'image') {
+                const imageExtensions = ['png', 'jpg', 'jpeg', 'gif'];
+                for (const ext of imageExtensions) {
+                    const imagePath = `${basePath}/avatar.${ext}`;
+                    if (await checkFileExists(imagePath)) {
+                        avatarImage.style.backgroundImage = `url('${imagePath}')`;
+                        avatarImage.style.display = 'block';
+                        avatarVideo.style.display = 'none';
+                        break;
+                    }
+                }
+            }
+            
+            // Фоновое видео
+            const videoSource = document.getElementById('videoSource');
+            videoSource.src = `${basePath}/background.mp4`;
+            const video = document.getElementById('backgroundVideo');
+            video.load();
+            
+            // Диск для музыки
+            document.getElementById('disc').style.backgroundImage = `url('${basePath}/disc.png')`;
+            
+            // Фоновая музыка
+            const audio = document.getElementById('backgroundMusic');
+            audio.src = `${basePath}/music.mp3`;
+            
+            return audio;
+        }
+        
+        // Инициализация страницы
+        window.onload = async function() {
+            // Выбор случайной темы
+            const theme = getRandomTheme();
+            
+            // Установка ресурсов
+            const audio = await setThemeResources(theme);
+            
+            // Скрываем модальные окна
             document.getElementById('donatModal').style.display = 'none';
-            document.getElementById('broModal').style.display = 'none';
             document.getElementById('projectsModal').style.display = 'none';
-
-            // Ensure music control slides in
+            
+            // Показываем панель управления музыкой
             const musicControl = document.querySelector('.music-control');
             setTimeout(() => {
                 musicControl.style.bottom = '20px';
             }, 100);
-            // Load music state
+            
+            // Загружаем состояние музыки
+            const playPauseButton = document.getElementById('playPause');
+            const musicSlider = document.getElementById('musicSlider');
+            
             const savedState = JSON.parse(localStorage.getItem('musicState'));
-            if (savedState && savedState.isPlaying) {
-                backgroundMusic.play();
-                document.getElementById('playPause').textContent = 'Pause';
-                musicControl.classList.add('playing');
-                backgroundMusic.volume = savedState.volume;
+            if (savedState) {
+                audio.volume = savedState.volume;
                 musicSlider.value = savedState.volume;
+                
+                if (savedState.isPlaying) {
+                    // Задержка для воспроизведения после загрузки
+                    setTimeout(() => {
+                        audio.play().then(() => {
+                            playPauseButton.textContent = 'Pause';
+                            musicControl.classList.add('playing');
+                        }).catch(e => {
+                            console.log('Autoplay prevented:', e);
+                        });
+                    }, 500);
+                }
             } else {
-                backgroundMusic.volume = 0.3;
+                audio.volume = 0.3;
                 musicSlider.value = 0.3;
             }
+            
+            // Обработчики событий
+            playPauseButton.addEventListener('click', function() {
+                if (audio.paused) {
+                    audio.play();
+                    playPauseButton.textContent = 'Pause';
+                    musicControl.classList.add('playing');
+                } else {
+                    audio.pause();
+                    playPauseButton.textContent = 'Play';
+                    musicControl.classList.remove('playing');
+                }
+                saveMusicState(audio);
+            });
+            
+            musicSlider.addEventListener('input', function() {
+                audio.volume = this.value;
+                saveMusicState(audio);
+            });
         };
-
+        
+        // Сохранение состояния музыки
+        function saveMusicState(audio) {
+            const musicState = {
+                isPlaying: !audio.paused,
+                volume: audio.volume
+            };
+            localStorage.setItem('musicState', JSON.stringify(musicState));
+        }
+        
+        // Функции для работы с модальными окнами
         function openModal(modalId) {
             const modal = document.getElementById(modalId);
             const modalContent = modal.querySelector('.modal-content');
-
-             // Reset closing animation if it was active
             modalContent.classList.remove('collapsing');
-
             modal.style.display = 'flex';
-            modal.classList.add('show'); // Add the show class to display the modal
+            modal.classList.add('show');
         }
-
+        
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             const modalContent = modal.querySelector('.modal-content');
-
-            modalContent.classList.add('collapsing'); // Add the collapsing class for animation
-
+            modalContent.classList.add('collapsing');
             setTimeout(() => {
-                modal.classList.remove('show'); // Remove the show class to hide the modal
+                modal.classList.remove('show');
                 modal.style.display = 'none';
                 modalContent.classList.remove('collapsing');
-
-            }, 400); // Match the duration of the collapse animation
+            }, 400);
         }
-
-
-        // Close modal when clicking outside
-        document.getElementById('broModal').addEventListener('click', function(event) {
+        
+        // Закрытие модальных окон при клике вне контента
+        document.getElementById('donatModal').addEventListener('click', function(event) {
             if (event.target === this) {
-                closeModal('broModal');
+                closeModal('donatModal');
             }
         });
+        
         document.getElementById('projectsModal').addEventListener('click', function(event) {
             if (event.target === this) {
                 closeModal('projectsModal');
             }
         });
-
-        // Music control
-        const musicControl = document.querySelector('.music-control');
-        const playPauseButton = document.getElementById('playPause');
-        const musicSlider = document.querySelector('.music-slider');
-        const backgroundMusic = document.getElementById('backgroundMusic');
-        const disc = document.querySelector('.disc');
-
-        playPauseButton.addEventListener('click', function() {
-            if (backgroundMusic.paused) {
-                backgroundMusic.play();
-                playPauseButton.textContent = 'Pause';
-                musicControl.classList.add('playing');
-            } else {
-                backgroundMusic.pause();
-                playPauseButton.textContent = 'Play';
-                musicControl.classList.remove('playing');
-            }
-        });
-
-        musicSlider.addEventListener('input', function() {
-            backgroundMusic.volume = this.value;
-        });
-
-        function saveMusicState() {
-            const musicState = {
-                isPlaying: !backgroundMusic.paused,
-                volume: backgroundMusic.volume
-            };
-            localStorage.setItem('musicState', JSON.stringify(musicState));
-        }
-
-        // Initial volume set
-        backgroundMusic.volume = 0.3;
     </script>
 </body>
 </html>
